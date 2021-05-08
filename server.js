@@ -12,7 +12,8 @@ const {
   removeRole,
   updateEmployeeRole,
   addDepartment,
-  removeDepartment
+  removeDepartment,
+  updateEmployeeManager
 } = require('./employees');
 require('console.table');
 
@@ -29,7 +30,7 @@ const actionArr = [
       'Add Employee',
       'Remove Employee',
       'Update Employee Role',
-      // 'Update Employee Manager',
+      'Update Employee Manager',
       'View All Roles',
       'Add Role',
       'Remove Role',
@@ -141,6 +142,21 @@ const updateEmployeeRoleArr = (employeesChoices, roleChoices) => [
   }
 ];
 
+const updateEmployeeManagerArr = (employeesChoices, managerChoices) => [
+  {
+    type: 'list',
+    name: 'name',
+    message: "Which employee do you want to update?",
+    choices: employeesChoices
+  },
+  {
+    type: 'list',
+    name: 'manager',
+    message: "Who is the employee's manager?",
+    choices: managerChoices
+  }
+];
+
 function promptAddEmployee() {
   viewRoles(rows => {
     const roleChoices = rows.map(row => ({
@@ -192,7 +208,7 @@ function promptRemoveEmployee() {
   });
 }
 
-function promptUpdateEmployee() {
+function promptUpdateEmployeeRole() {
   viewEmployees(rows => {
     const employeesChoices = rows.map(row => ({
       name: `${row.first_name} ${row.last_name}`,
@@ -221,6 +237,41 @@ function promptUpdateEmployee() {
           menu();
         });
     });
+  })
+}
+
+function promptUpdateEmployeeManager() {
+  viewEmployees(rows => {
+    const employeesChoices = rows.map(row => ({
+      name: `${row.first_name} ${row.last_name}`,
+      value: row.id
+    }));
+
+    viewManagers(rows => {
+      const managerChoices = rows.map(row => ({
+        name: row.name,
+        value: row.id
+      }));
+
+      inquirer.prompt(updateEmployeeManagerArr(employeesChoices, managerChoices))
+        .then(data => {
+          const params = [
+            data.manager,
+            data.name
+          ];
+
+          updateEmployeeManager(params);
+          employeesChoices.map(role => {
+            if (role.value === data.name)
+              console.log(`Updated the Manager of ${role.name} Successfully!`);
+          });
+
+          menu();
+        });
+    });
+
+
+
   })
 }
 
@@ -351,7 +402,11 @@ async function menu() {
       break;
 
     case 'Update Employee Role':
-      promptUpdateEmployee();
+      promptUpdateEmployeeRole();
+      break;
+
+    case 'Update Employee Manager':
+      promptUpdateEmployeeManager();
       break;
 
     case 'Add Role':

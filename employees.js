@@ -98,6 +98,16 @@ function updateEmployeeRole(ids) {
     });
 }
 
+function updateEmployeeManager(ids) {
+    const sql = `UPDATE employees
+    SET manager_id = ?
+    WHERE id = ?`;
+
+    db.query(sql, ids, (err) => {
+        if (err) throw err;
+    });
+}
+
 function addDepartment(value) {
     const sql = `INSERT INTO departments (name) VALUES (?)`;
 
@@ -126,5 +136,6 @@ module.exports = {
     removeRole,
     updateEmployeeRole,
     addDepartment,
-    removeDepartment
+    removeDepartment,
+    updateEmployeeManager
 };
