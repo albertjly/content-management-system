@@ -98,6 +98,14 @@ function updateEmployeeRole(ids) {
     });
 }
 
+function addDepartment(value) {
+    const sql = `INSERT INTO departments (name) VALUES (?)`;
+
+    db.query(sql, value, (err) => {
+        if (err) throw err;
+    });
+}
+
 
 module.exports = {
     viewEmployees,
@@ -108,5 +116,6 @@ module.exports = {
     viewManagers,
     addRoles,
     removeRole,
-    updateEmployeeRole
+    updateEmployeeRole,
+    addDepartment
 };

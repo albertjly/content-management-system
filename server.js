@@ -10,7 +10,8 @@ const {
   viewManagers,
   addRoles,
   removeRole,
-  updateEmployeeRole
+  updateEmployeeRole,
+  addDepartment
 } = require('./employees');
 require('console.table');
 
@@ -32,7 +33,7 @@ const actionArr = [
       'Add Role',
       'Remove Role',
       'View All Departments',
-      // 'Add Department',
+      'Add Department',
       // 'Update Department',
       "That's it!!!"
     ]
@@ -78,6 +79,15 @@ const newRoleArr = (departmentsChoices) => [
   }
 ];
 
+const newDepartmentArr = [
+  {
+    type: 'input',
+    name: 'department',
+    message: 'What\'s the title of this department?',
+    validate: input => !!input
+  }
+];
+
 const addEmployeeArr = (roleChoices, managerChoices) => [
   {
     type: 'input',
@@ -119,38 +129,6 @@ const updateEmployeeRoleArr = (employeesChoices, roleChoices) => [
     choices: roleChoices
   }
 ];
-
-function promptUpdateEmployee() {
-  viewEmployees(rows => {
-    const employeesChoices = rows.map(row => ({
-      name: `${row.first_name} ${row.last_name}`,
-      value: row.id
-    }));
-
-    viewRoles(rows => {
-      const roleChoices = rows.map(row => ({
-        name: row.title,
-        value: row.id
-      }));
-
-      inquirer.prompt(updateEmployeeRoleArr(employeesChoices, roleChoices))
-        .then(data => {
-          const params = [
-            data.role,
-            data.name
-          ];
-
-          updateEmployeeRole(params);
-          employeesChoices.map(role => {
-            if (role.value === data.role)
-              console.log(`Updated the Role of ${role.name} Successfully!`);
-          });
-
-          menu();
-        });
-    });
-  })
-}
 
 function promptAddEmployee() {
   viewRoles(rows => {
@@ -203,6 +181,38 @@ function promptRemoveEmployee() {
   });
 }
 
+function promptUpdateEmployee() {
+  viewEmployees(rows => {
+    const employeesChoices = rows.map(row => ({
+      name: `${row.first_name} ${row.last_name}`,
+      value: row.id
+    }));
+
+    viewRoles(rows => {
+      const roleChoices = rows.map(row => ({
+        name: row.title,
+        value: row.id
+      }));
+
+      inquirer.prompt(updateEmployeeRoleArr(employeesChoices, roleChoices))
+        .then(data => {
+          const params = [
+            data.role,
+            data.name
+          ];
+
+          updateEmployeeRole(params);
+          employeesChoices.map(role => {
+            if (role.value === data.role)
+              console.log(`Updated the Role of ${role.name} Successfully!`);
+          });
+
+          menu();
+        });
+    });
+  })
+}
+
 function promptAddRole() {
   viewDepartments(rows => {
     const departmentsChoices = rows.map(row => ({
@@ -246,6 +256,18 @@ function promptRemoveRole() {
         menu();
       });
   });
+}
+
+function promptAddDepartment() {
+  inquirer.prompt(newDepartmentArr).then(data => {
+    const newDepart = [
+      data.department
+    ];
+
+    addDepartment(newDepart);
+    console.log(`${newDepart} has been added!`);
+    menu();
+  })
 }
 
 async function menu() {
@@ -304,6 +326,10 @@ async function menu() {
 
     case 'Remove Role':
       promptRemoveRole();
+      break;
+
+    case 'Add Department':
+      promptAddDepartment();
       break;
   }
 }
