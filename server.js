@@ -11,7 +11,8 @@ const {
   addRoles,
   removeRole,
   updateEmployeeRole,
-  addDepartment
+  addDepartment,
+  removeDepartment
 } = require('./employees');
 require('console.table');
 
@@ -34,6 +35,7 @@ const actionArr = [
       'Remove Role',
       'View All Departments',
       'Add Department',
+      'Remove Department',
       // 'Update Department',
       "That's it!!!"
     ]
@@ -57,6 +59,15 @@ const rolesArr = (rolesChoices) => [
     choices: rolesChoices
   }
 ];
+
+const departmentsArr = (departmentsChoices) => [
+  {
+    type: 'list',
+    name: 'department',
+    message: 'What department would you like to erase?',
+    choices: departmentsChoices
+  }
+]
 
 const newRoleArr = (departmentsChoices) => [
   {
@@ -270,6 +281,29 @@ function promptAddDepartment() {
   })
 }
 
+function promptRemoveDepartment() {
+  viewDepartments(rows => {
+    const departmentsChoices = rows.map(row => ({
+      name: row.name,
+      value: row.id
+    }));
+
+    inquirer.prompt(departmentsArr(departmentsChoices))
+      .then(data => {
+        const params = [
+          data.department
+        ];
+
+        removeDepartment(params);
+        departmentsChoices.map(depart => {
+          if (depart.value === data.department)
+            console.log(`You have erased ${depart.name} from Departments!`);
+        });
+        menu();
+      });
+  });
+}
+
 async function menu() {
   const { action } = await inquirer.prompt(actionArr);
   switch (action) {
@@ -330,6 +364,10 @@ async function menu() {
 
     case 'Add Department':
       promptAddDepartment();
+      break;
+
+    case 'Remove Department':
+      promptRemoveDepartment();
       break;
   }
 }

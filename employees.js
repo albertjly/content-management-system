@@ -106,6 +106,14 @@ function addDepartment(value) {
     });
 }
 
+function removeDepartment(id) {
+    const sql = `DELETE FROM departments WHERE id = ?`;
+
+    db.query(sql, id, (err) => {
+        if (err) throw err;
+    });
+}
+
 
 module.exports = {
     viewEmployees,
@@ -117,5 +125,6 @@ module.exports = {
     addRoles,
     removeRole,
     updateEmployeeRole,
-    addDepartment
+    addDepartment,
+    removeDepartment
 };
