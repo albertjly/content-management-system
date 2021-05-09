@@ -26,7 +26,7 @@ const actionArr = [
     choices: [
       'View All Employees',
       'View All Employees By Department',
-      // 'View All Employees By Manager',
+      'View All Employees By Manager',
       'Add Employee',
       'Remove Employee',
       'Update Employee Role',
@@ -165,6 +165,15 @@ const viewByDepartmentArr = (departmentsChoices) => [
   }
 ];
 
+const viewByManagerArr = (managersChoices) => [
+  {
+    type: 'list',
+    name: 'manager',
+    message: 'Which manager would you like to view?',
+    choices: managersChoices
+  }
+];
+
 function promptViewByDepartment() {
   viewDepartments(rows => {
     const departmentsChoices = rows.map(row => ({
@@ -177,15 +186,46 @@ function promptViewByDepartment() {
         .then(data => {
           departmentsChoices.map(dept => {
             if (dept.value === data.department) {
-              let singleDept = [];
+              let departmentArr = [];
               rows.map(row => {
                 if (row.department === dept.name) {
-                  singleDept.push(row);
+                  departmentArr.push(row);
                 }
               });
               
               // ! to check an array is empty or not by using array.length
-              if (singleDept.length !== 0) console.table(singleDept);
+              if (departmentArr.length !== 0) console.table(departmentArr);
+              else console.log('No one is here!');
+
+              menu();
+            }
+          });
+        });
+    });
+  });
+}
+
+function promptViewByManager() {
+  viewManagers(rows => {
+    const managerChoices = rows.map(row => ({
+      name: row.name,
+      value: row.id
+    }));
+
+    viewEmployees(rows => {
+      inquirer.prompt(viewByManagerArr(managerChoices))
+        .then(data => {
+          managerChoices.map(manager => {
+            if (manager.value === data.manager) {
+              let managerArr = [];
+              rows.map(row => {
+                if (row.manager === manager.name) {
+                  managerArr.push(row);
+                }
+              });
+              
+              // ! to check an array is empty or not by using array.length
+              if (managerArr.length !== 0) console.table(managerArr);
               else console.log('No one is here!');
 
               menu();
@@ -409,6 +449,10 @@ async function menu() {
 
     case 'View All Employees By Department':
       promptViewByDepartment();
+      break;
+
+    case 'View All Employees By Manager':
+      promptViewByManager();
       break;
 
     case 'View All Departments':
