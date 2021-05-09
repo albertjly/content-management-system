@@ -25,7 +25,7 @@ const actionArr = [
     message: 'What would you like to do?',
     choices: [
       'View All Employees',
-      // 'View All Employees By Department',
+      'View All Employees By Department',
       // 'View All Employees By Manager',
       'Add Employee',
       'Remove Employee',
@@ -37,7 +37,6 @@ const actionArr = [
       'View All Departments',
       'Add Department',
       'Remove Department',
-      // 'Update Department',
       "That's it!!!"
     ]
   }
@@ -65,10 +64,10 @@ const departmentsArr = (departmentsChoices) => [
   {
     type: 'list',
     name: 'department',
-    message: 'What department would you like to erase?',
+    message: 'Which department would you like to erase?',
     choices: departmentsChoices
   }
-]
+];
 
 const newRoleArr = (departmentsChoices) => [
   {
@@ -156,6 +155,46 @@ const updateEmployeeManagerArr = (employeesChoices, managerChoices) => [
     choices: managerChoices
   }
 ];
+
+const viewByDepartmentArr = (departmentsChoices) => [
+  {
+    type: 'list',
+    name: 'department',
+    message: 'Which department would you like to view?',
+    choices: departmentsChoices
+  }
+];
+
+function promptViewByDepartment() {
+  viewDepartments(rows => {
+    const departmentsChoices = rows.map(row => ({
+      name: row.name,
+      value: row.id
+    }));
+
+    viewEmployees(rows => {
+      inquirer.prompt(viewByDepartmentArr(departmentsChoices))
+        .then(data => {
+          departmentsChoices.map(dept => {
+            if (dept.value === data.department) {
+              let singleDept = [];
+              rows.map(row => {
+                if (row.department === dept.name) {
+                  singleDept.push(row);
+                }
+              });
+              
+              // ! to check an array is empty or not by using array.length
+              if (singleDept.length !== 0) console.table(singleDept);
+              else console.log('No one is here!');
+
+              menu();
+            }
+          });
+        });
+    });
+  });
+}
 
 function promptAddEmployee() {
   viewRoles(rows => {
@@ -366,6 +405,10 @@ async function menu() {
         console.table(rows);
         menu();
       });
+      break;
+
+    case 'View All Employees By Department':
+      promptViewByDepartment();
       break;
 
     case 'View All Departments':
